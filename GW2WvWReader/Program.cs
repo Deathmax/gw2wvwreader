@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -31,19 +32,25 @@ namespace GW2WvWReader
                     var red = new ServerStat(Function.ReadBytes("gw2", pointer, 32));
                     var blue = new ServerStat(Function.ReadBytes("gw2", pointer + 32, 32));
                     var green = new ServerStat(Function.ReadBytes("gw2", pointer + 64, 32));
+                    Console.WriteLine(DateTime.UtcNow);
                     Console.WriteLine("Red: {0}", red);
                     Console.WriteLine("Blue: {0}", blue);
                     Console.WriteLine("Green: {0}", green);
                     var write = new[]
                                     {
                                         ((int)DateTimeToUnixTimestamp(DateTime.UtcNow)).ToString(),
-                                        string.Format("R|{0}|{1}", red.Score, red.PotentialPoints),
-                                        string.Format("B|{0}|{1}", blue.Score, blue.PotentialPoints),
-                                        string.Format("G|{0}|{1}\n", green.Score, green.PotentialPoints)
+                                        string.Format("Isle of Janthir|{0}|{1}", red.Score, red.PotentialPoints),
+                                        string.Format("Sanctum of Rall|{0}|{1}", blue.Score, blue.PotentialPoints),
+                                        string.Format("Blackgate|{0}|{1}", green.Score, green.PotentialPoints)
                                     };
                     File.AppendAllLines("log.txt", write);
+                    var client = new WebClient();
+                    client.Headers.Add("Content-Type","binary/octet-stream");
+                    var result = client.UploadFile("", "log.txt");
+                    Console.WriteLine(Encoding.UTF8.GetString(result, 0, result.Length));
+                    sigscan = null;
                 }
-                Thread.Sleep(10000);
+                Thread.Sleep(60000);
             }
         }
 
