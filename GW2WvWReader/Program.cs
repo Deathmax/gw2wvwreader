@@ -15,6 +15,9 @@ namespace GW2WvWReader
     {
         static void Main(string[] args)
         {
+            const string redname = "Isle of Janthir";
+            const string bluename = "Sanctum of Rall";
+            const string greenname = "Blackgate";
             while (true)
             {
                 if (Process.GetProcessesByName("Gw2").Length > 0)
@@ -39,16 +42,18 @@ namespace GW2WvWReader
                     var write = new[]
                                     {
                                         ((int)DateTimeToUnixTimestamp(DateTime.UtcNow)).ToString(),
-                                        string.Format("Isle of Janthir|{0}|{1}", red.Score, red.PotentialPoints),
-                                        string.Format("Sanctum of Rall|{0}|{1}", blue.Score, blue.PotentialPoints),
-                                        string.Format("Blackgate|{0}|{1}", green.Score, green.PotentialPoints)
+                                        string.Format("{2}|{0}|{1}", red.Score, red.PotentialPoints, redname),
+                                        string.Format("{2}|{0}|{1}", blue.Score, blue.PotentialPoints, bluename),
+                                        string.Format("{2}|{0}|{1}", green.Score, green.PotentialPoints, greenname)
                                     };
                     File.AppendAllLines("log.txt", write);
                     var client = new WebClient();
                     client.Headers.Add("Content-Type","binary/octet-stream");
                     var result = client.UploadFile("", "log.txt");
                     Console.WriteLine(Encoding.UTF8.GetString(result, 0, result.Length));
+                    sigscan.Dispose();
                     sigscan = null;
+                    GC.Collect();
                 }
                 Thread.Sleep(60000);
             }

@@ -24,6 +24,11 @@ namespace GW2WvWReader
         private static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] byte[] lpBuffer,
                                                      int dwSize, out int lpNumberOfBytesRead);
 
+        public void Dispose()
+        {
+            m_vDumpedRegion = null;
+        }
+
         private bool DumpMemory()
         {
             try
